@@ -46,6 +46,9 @@ options+=('-p' 'ProtectHome=read-only')
 options+=('-p' "ReadWritePaths='$WORKING_DIR'")
 options+=('-p' "ReadWritePaths='$HOME/.config'")
 options+=('-p' "ReadWritePaths='$HOME/.cache'")
+options+=('-p' "ReadWritePaths='$HOME/.aws/amazonq'")
+options+=('-p' "ReadWritePaths='$HOME/.local/share/amazon-q'")
+
 
 ## explicit deny list
 options+=('-p' "InaccessiblePaths='$HOME/.ssh'")
