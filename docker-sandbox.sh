@@ -62,8 +62,8 @@ docker_options+=("--env=TERM=${TERM:-xterm}")
 docker_options+=('--memory=1g')
 docker_options+=('--cpus=1.0')
 
-# Additional security options
-docker_options+=('--security-opt=apparmor:docker-default')
+# Additional security options (AppArmor is not available on macOS)
+# docker_options+=('--security-opt=apparmor:docker-default')
 
 # Set hostname to prevent information leakage
 docker_options+=('--hostname=sandbox')
