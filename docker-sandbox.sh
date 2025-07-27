@@ -51,13 +51,10 @@ for file in "${essential_files[@]}"; do
     fi
 done
 
-docker_options+=("--volume=/etc/passwd:/etc/passwd:ro")
-
 # Mount writable directories
 writable_dirs=(
     ".config"
-    ".cache" 
-    ".local/share/amazon-q"
+    ".cache"
     ".aws/amazonq"
 )
 
@@ -66,6 +63,7 @@ for dir in "${writable_dirs[@]}"; do
         docker_options+=("--volume=${HOME}/${dir}:${HOME}/${dir}:rw")
     fi
 done
+# docker_options+=("--volume=${HOME}/Library/Application Support/amazon-q:${HOME}/.local/share/amazon-q:rw")
 
 # Environment variables
 docker_options+=("--env=PATH=${PATH}")

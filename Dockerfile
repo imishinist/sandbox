@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y \
     curl \
     unzip \
     ca-certificates \
+    git \
+    jq \
     && rm -rf /var/lib/apt/lists/*
 
 # アーキテクチャを取得してAmazon Q CLIをダウンロード
