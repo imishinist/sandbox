@@ -33,24 +33,39 @@ docker_options+=('--network=bridge')
 docker_options+=("--volume=${WORKING_DIR}:${WORKING_DIR}:rw")
 docker_options+=("--workdir=${WORKING_DIR}")
 
-# Mount home directory as read-only
-docker_options+=("--volume=${HOME}:${HOME}:ro")
 
-# Grant write access to specific directories (only if they exist)
-if [ -d "${HOME}/.config" ]; then
-    docker_options+=("--volume=${HOME}/.config:${HOME}/.config:rw")
-fi
-if [ -d "${HOME}/.cache" ]; then
-    docker_options+=("--volume=${HOME}/.cache:${HOME}/.cache:rw")
-fi
+# Create writable home directory with tmpfs
+docker_options+=("--tmpfs=${HOME}:noexec,nosuid,nodev,size=500m")
 
-# AWS Q specific directories (if they exist)
-if [ -d "${HOME}/.aws/amazonq" ]; then
-    docker_options+=("--volume=${HOME}/.aws/amazonq:${HOME}/.aws/amazonq:rw")
-fi
-if [ -d "${HOME}/.local/share/amazon-q" ]; then
-    docker_options+=("--volume=${HOME}/.local/share/amazon-q:${HOME}/.local/share/amazon-q:rw")
-fi
+# Mount essential read-only files from host home
+essential_files=(
+    ".bashrc"
+    ".bash_profile"
+    ".profile"
+    ".gitconfig"
+)
+
+for file in "${essential_files[@]}"; do
+    if [ -e "${HOME}/${file}" ]; then
+        docker_options+=("--volume=${HOME}/${file}:${HOME}/${file}:ro")
+    fi
+done
+
+docker_options+=("--volume=/etc/passwd:/etc/passwd:ro")
+
+# Mount writable directories
+writable_dirs=(
+    ".config"
+    ".cache" 
+    ".local/share/amazon-q"
+    ".aws/amazonq"
+)
+
+for dir in "${writable_dirs[@]}"; do
+    if [ -d "${HOME}/${dir}" ]; then
+        docker_options+=("--volume=${HOME}/${dir}:${HOME}/${dir}:rw")
+    fi
+done
 
 # Environment variables
 docker_options+=("--env=PATH=${PATH}")
