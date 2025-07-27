@@ -63,7 +63,18 @@ for dir in "${writable_dirs[@]}"; do
         docker_options+=("--volume=${HOME}/${dir}:${HOME}/${dir}:rw")
     fi
 done
-docker_options+=("--volume=${HOME}/Library/Application Support/amazon-q:${HOME}/.local/share/amazon-q:rw")
+# Mount Amazon Q data directory (OS-specific paths)
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    # macOS
+    if [ -d "${HOME}/Library/Application Support/amazon-q" ]; then
+        docker_options+=("--volume=${HOME}/Library/Application Support/amazon-q:${HOME}/.local/share/amazon-q:rw")
+    fi
+else
+    # Linux and other Unix-like systems
+    if [ -d "${HOME}/.local/share/amazon-q" ]; then
+        docker_options+=("--volume=${HOME}/.local/share/amazon-q:${HOME}/.local/share/amazon-q:rw")
+    fi
+fi
 
 # Environment variables
 docker_options+=("--env=PATH=${PATH}")
