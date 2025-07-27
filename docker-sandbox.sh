@@ -63,7 +63,7 @@ for dir in "${writable_dirs[@]}"; do
         docker_options+=("--volume=${HOME}/${dir}:${HOME}/${dir}:rw")
     fi
 done
-# docker_options+=("--volume=${HOME}/Library/Application Support/amazon-q:${HOME}/.local/share/amazon-q:rw")
+docker_options+=("--volume=${HOME}/Library/Application Support/amazon-q:${HOME}/.local/share/amazon-q:rw")
 
 # Environment variables
 docker_options+=("--env=PATH=${PATH}")
