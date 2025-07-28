@@ -29,13 +29,18 @@ docker_options+=("--user=${USER_ID}:${GROUP_ID}")
 # Network restrictions
 docker_options+=('--network=bridge')
 
-# Mount current working directory as read-write
-docker_options+=("--volume=${WORKING_DIR}:${WORKING_DIR}:rw")
-docker_options+=("--workdir=${WORKING_DIR}")
-
+# Mount current working directory as read-write (skip if same as HOME for security)
+if [ "${WORKING_DIR}" != "${HOME}" ]; then
+    docker_options+=("--volume=${WORKING_DIR}:${WORKING_DIR}:rw")
+    docker_options+=("--workdir=${WORKING_DIR}")
+else
+    echo "WARNING: Running from HOME directory (${HOME}). Working directory will not be mounted for security reasons." >&2
+    echo "WARNING: Files in HOME will be stored in temporary memory and lost after exit." >&2
+    docker_options+=("--workdir=${WORKING_DIR}")
+fi
 
 # Create writable home directory with tmpfs
-docker_options+=("--tmpfs=${HOME}:noexec,nosuid,nodev,size=500m")
+docker_options+=("--tmpfs=${HOME}:noexec,nosuid,nodev,size=500m,uid=${USER_ID},gid=${GROUP_ID}")
 
 # Mount essential read-only files from host home
 essential_files=(
@@ -98,7 +103,16 @@ IMAGE="sandbox-amazonq:latest"
 # Check if image exists, if not build it
 if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
     echo "Building Docker image: $IMAGE"
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    # Get the real path of the script, resolving symlinks (macOS compatible)
+    SCRIPT_PATH="${BASH_SOURCE[0]}"
+    while [ -L "$SCRIPT_PATH" ]; do
+        SCRIPT_PATH="$(readlink "$SCRIPT_PATH")"
+        # Handle relative symlinks
+        if [[ "$SCRIPT_PATH" != /* ]]; then
+            SCRIPT_PATH="$(dirname "${BASH_SOURCE[0]}")/$SCRIPT_PATH"
+        fi
+    done
+    SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
     docker build -t "$IMAGE" "$SCRIPT_DIR"
 fi
 
