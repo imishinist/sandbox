@@ -11,8 +11,17 @@ fi
 # 作業ディレクトリを取得
 WORKING_DIR=$(pwd)
 
-# スクリプトのディレクトリを取得
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# スクリプトのディレクトリを取得（シンボリックリンク対応）
+SCRIPT_PATH="${BASH_SOURCE[0]}"
+# シンボリックリンクの場合は実際のファイルパスを取得
+while [[ -L "$SCRIPT_PATH" ]]; do
+    SCRIPT_PATH="$(readlink "$SCRIPT_PATH")"
+    # 相対パスの場合は絶対パスに変換
+    if [[ "$SCRIPT_PATH" != /* ]]; then
+        SCRIPT_PATH="$(dirname "${BASH_SOURCE[0]}")/$SCRIPT_PATH"
+    fi
+done
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
 
 # プロファイルファイルのパス
 PROFILE_FILE="$SCRIPT_DIR/sandbox.sb"
