@@ -39,6 +39,3 @@ ln -s $(pwd)/sandbox-docker.sh ~/.local/bin/sandbox
 ## 詳細情報
 
 Docker版の詳細な使用方法については [DOCKER_SANDBOX.md](./DOCKER_SANDBOX.md) を参照してください。
-## 詳細情報
-
-Docker版の詳細な使用方法については [DOCKER_SANDBOX.md](./DOCKER_SANDBOX.md) を参照してください。
