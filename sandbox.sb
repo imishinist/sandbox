@@ -1,0 +1,33 @@
+;; sandbox-exec profile for secure sandboxing
+;; Based on systemd-run sandbox.sh functionality
+
+(version 1)
+
+(allow default)
+(deny file-write*)
+
+;; 機密ディレクトリは完全アクセス拒否
+(deny file-read* file-write*
+    (subpath (string-append (param "HOME") "/.ssh"))
+    (subpath (string-append (param "HOME") "/.gnupg")))
+
+;; 必要最小限の書き込み許可ディレクトリ
+(allow file-write*
+    (subpath (param "WORKING_DIR"))
+    (subpath (string-append (param "HOME") "/.config"))
+    (subpath (string-append (param "HOME") "/.cache"))
+    (subpath "/private/var/folders")
+    (subpath "/tmp")
+    (subpath "/var/tmp")
+    (literal "/dev/null")
+    (literal "/dev/stdout")
+    (literal "/dev/stderr")
+    (literal "/dev/tty"))
+
+;; for amazonq
+(allow file-write*
+    (subpath (string-append (param "HOME") "/Library/Keychains"))
+    (subpath (string-append (param "HOME") "/.aws/amazonq"))
+    (subpath (string-append (param "HOME") "/.local/share/amazon-q"))
+    (subpath (string-append (param "HOME") "/.amazonq"))
+    (subpath (string-append (param "HOME") "/Library/Application Support/amazon-q")))
