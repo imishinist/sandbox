@@ -4,24 +4,32 @@
 
 ## 利用可能なサンドボックス
 
-### 1. systemd-run版（Linux）
-- `sandbox-systemd.sh`: systemd-runを使用したサンドボックス
-- Linux（systemd必須）で動作
+### 1. Docker版
+- `sandbox-docker.sh`: Dockerを使用したサンドボックス
+- Docker対応OSで動作（Linux、macOS、Windows）
 
 ### 2. macOS版
 - `sandbox-macos.sh`: macOS sandbox-execを使用したサンドボックス
 - macOS専用
 
-### 3. Docker版
-- `sandbox-docker.sh`: Dockerを使用したサンドボックス
-- Docker対応OSで動作（Linux、macOS、Windows）
+### 3. systemd-run版（Linux）
+- `sandbox-systemd.sh`: systemd-runを使用したサンドボックス
+- Linux（systemd必須）で動作
+
 
 ## インストール手順
 
-### systemd-run版（Linux）
+まず、リポジトリをクローンします：
 
 ```bash
-ln -s $(pwd)/sandbox-systemd.sh ~/.local/bin/sandbox
+git clone https://github.com/imishinist/sandbox.git
+cd sandbox
+```
+
+### Docker版
+
+```bash
+ln -s $(pwd)/sandbox-docker.sh ~/.local/bin/sandbox
 ```
 
 ### macOS版
@@ -30,10 +38,10 @@ ln -s $(pwd)/sandbox-systemd.sh ~/.local/bin/sandbox
 ln -s $(pwd)/sandbox-macos.sh ~/.local/bin/sandbox
 ```
 
-### Docker版
+### systemd-run版（Linux）
 
 ```bash
-ln -s $(pwd)/sandbox-docker.sh ~/.local/bin/sandbox
+ln -s $(pwd)/sandbox-systemd.sh ~/.local/bin/sandbox
 ```
 
 ## 詳細情報
