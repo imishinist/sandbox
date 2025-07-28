@@ -3,10 +3,17 @@
 
 (version 1)
 
+;; デフォルトで全てを許可してから制限を追加
 (allow default)
+
+;; ========================================
+;; ファイルシステム制限
+;; ========================================
+
+;; デフォルトで書き込みを拒否
 (deny file-write*)
 
-;; 機密ディレクトリは完全アクセス拒否
+;; 機密ディレクトリは完全アクセス拒否（sandbox.shから移植）
 (deny file-read* file-write*
     (subpath (string-append (param "HOME") "/.ssh"))
     (subpath (string-append (param "HOME") "/.gnupg")))
@@ -24,10 +31,65 @@
     (literal "/dev/stderr")
     (literal "/dev/tty"))
 
-;; for amazonq
+;; Amazon Q関連ディレクトリ
 (allow file-write*
     (subpath (string-append (param "HOME") "/Library/Keychains"))
     (subpath (string-append (param "HOME") "/.aws/amazonq"))
     (subpath (string-append (param "HOME") "/.local/share/amazon-q"))
     (subpath (string-append (param "HOME") "/.amazonq"))
     (subpath (string-append (param "HOME") "/Library/Application Support/amazon-q")))
+
+;; ========================================
+;; デバイスアクセス制限（sandbox.shから移植）
+;; ========================================
+
+;; 危険なデバイスファイルへのアクセスを制限
+(deny file-read* file-write*
+    (literal "/dev/kmem")
+    (literal "/dev/mem")
+    (literal "/dev/disk0")
+    (literal "/dev/disk1")
+    (literal "/dev/disk2")
+    (literal "/dev/disk3")
+    (literal "/dev/disk4")
+    (literal "/dev/disk5"))
+
+;; 安全なデバイスファイルのみ許可
+(allow file-read* file-write*
+    (literal "/dev/null")
+    (literal "/dev/zero")
+    (literal "/dev/random")
+    (literal "/dev/urandom")
+    (literal "/dev/stdin")
+    (literal "/dev/stdout")
+    (literal "/dev/stderr")
+    (literal "/dev/tty"))
+
+;; ========================================
+;; プロセス制限
+;; ========================================
+
+;; 危険なシステムコールを制限
+(deny process-exec
+    (literal "/usr/bin/sudo")
+    (literal "/usr/bin/su")
+    (literal "/bin/su")
+    (literal "/usr/sbin/chroot"))
+
+;; ========================================
+;; システム情報アクセス制限
+;; ========================================
+
+;; カーネル情報へのアクセス制限
+(deny sysctl-read
+    (sysctl-name "kern.boottime")
+    (sysctl-name "kern.hostname")
+    (sysctl-name "kern.domainname"))
+
+;; ========================================
+;; その他のセキュリティ制限
+;; ========================================
+
+;; 特権操作の制限
+(deny authorization-right-obtain)
+(deny authorization-right-obtain (right-name "system.privilege.admin"))
