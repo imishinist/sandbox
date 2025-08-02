@@ -39,6 +39,13 @@
     (subpath (string-append (param "HOME") "/.amazonq"))
     (subpath (string-append (param "HOME") "/Library/Application Support/amazon-q")))
 
+;; package manager
+(allow file-write*
+    (subpath (string-append (param "HOME") "/.vim"))
+    (subpath (string-append (param "HOME") "/.volta"))
+    (subpath (string-append (param "HOME") "/.npm"))
+    (subpath (string-append (param "HOME") "/.cargo")))
+
 ;; ========================================
 ;; デバイスアクセス制限（sandbox.shから移植）
 ;; ========================================
