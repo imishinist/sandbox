@@ -60,7 +60,7 @@ for var in "${SAFE_ENV_VARS[@]}"; do
 done
 
 # sandbox-execを実行
-exec sandbox-exec \
+sandbox-exec \
     "${env_args[@]}" \
     -D "WORKING_DIR=$WORKING_DIR" \
     -f "$PROFILE_FILE" \

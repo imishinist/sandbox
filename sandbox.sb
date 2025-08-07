@@ -13,7 +13,7 @@
 ;; デフォルトで書き込みを拒否
 (deny file-write*)
 
-;; 機密ディレクトリは完全アクセス拒否（sandbox.shから移植）
+;; 機密ディレクトリは完全アクセス拒否
 (deny file-read* file-write*
     (subpath (string-append (param "HOME") "/.ssh"))
     (subpath (string-append (param "HOME") "/.gnupg")))
@@ -23,8 +23,10 @@
     (subpath (param "WORKING_DIR"))
     (subpath (string-append (param "HOME") "/.config"))
     (subpath (string-append (param "HOME") "/.cache"))
+    (subpath "/var/folders")
     (subpath "/private/var/folders")
     (subpath "/tmp")
+    (subpath "/private/tmp")
     (subpath "/var/tmp")
     (literal "/dev/null")
     (literal "/dev/stdout")
@@ -39,12 +41,18 @@
     (subpath (string-append (param "HOME") "/.amazonq"))
     (subpath (string-append (param "HOME") "/Library/Application Support/amazon-q")))
 
-;; package manager
+;; for tools
 (allow file-write*
-    (subpath (string-append (param "HOME") "/.vim"))
-    (subpath (string-append (param "HOME") "/.volta"))
+    (subpath (string-append (param "HOME") "/Library/Caches/ms-playwright"))
+    (subpath (string-append (param "HOME") "/Library/Caches/go-build"))
+    (subpath (string-append (param "HOME") "/.cache/uv"))
     (subpath (string-append (param "HOME") "/.npm"))
     (subpath (string-append (param "HOME") "/.cargo")))
+
+;; editor
+(allow file-write*
+    (subpath (string-append (param "HOME") "/.local/share/.nvim"))
+    (subpath (string-append (param "HOME") "/.local/state/.nvim")))
 
 ;; ========================================
 ;; デバイスアクセス制限（sandbox.shから移植）
@@ -90,7 +98,6 @@
 ;; カーネル情報へのアクセス制限
 (deny sysctl-read
     (sysctl-name "kern.boottime")
-    (sysctl-name "kern.hostname")
     (sysctl-name "kern.domainname"))
 
 ;; ========================================
