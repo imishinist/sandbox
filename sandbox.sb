@@ -41,6 +41,15 @@
     (subpath (string-append (param "HOME") "/.amazonq"))
     (subpath (string-append (param "HOME") "/Library/Application Support/amazon-q")))
 
+;; Kiro CLI関連ディレクトリ
+(allow file-write*
+    (subpath (string-append (param "HOME") "/.kiro"))
+    (subpath (string-append (param "HOME") "/Library/Application Support/Kiro CLI")))
+
+;; Kiro CLIアプリケーションへのアクセス
+(allow file-read* file-read-metadata
+    (subpath "/Applications/Kiro CLI.app"))
+
 ;; for tools
 (allow file-write*
     (subpath (string-append (param "HOME") "/Library/Caches/ms-playwright"))
