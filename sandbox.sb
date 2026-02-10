@@ -44,7 +44,8 @@
 ;; Kiro CLI関連ディレクトリ
 (allow file-write*
     (subpath (string-append (param "HOME") "/.kiro"))
-    (subpath (string-append (param "HOME") "/Library/Application Support/Kiro CLI")))
+    (subpath (string-append (param "HOME") "/Library/Application Support/Kiro"))
+    (subpath (string-append (param "HOME") "/Library/Application Support/kiro-cli")))
 
 ;; Kiro CLIアプリケーションへのアクセス
 (allow file-read* file-read-metadata
