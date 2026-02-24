@@ -56,6 +56,7 @@
     (subpath (string-append (param "HOME") "/Library/Caches/ms-playwright"))
     (subpath (string-append (param "HOME") "/Library/Caches/go-build"))
     (subpath (string-append (param "HOME") "/.cache/uv"))
+    (subpath (string-append (param "HOME") "/go/pkg"))
     (subpath (string-append (param "HOME") "/.npm"))
     (subpath (string-append (param "HOME") "/.cargo")))
 
