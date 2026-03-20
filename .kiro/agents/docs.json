@@ -1,0 +1,13 @@
+{
+  "name": "docs",
+  "description": "Documentation agent for maintaining README and guides",
+  "prompt": "file://./prompts/docs.md",
+  "tools": ["read", "write"],
+  "allowedTools": ["read", "write"],
+  "toolsSettings": {
+    "write": {
+      "allowedPaths": ["*.md"]
+    }
+  },
+  "resources": ["README.md", "DOCKER_SANDBOX.md"]
+}

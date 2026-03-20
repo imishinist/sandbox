@@ -1,0 +1,16 @@
+{
+  "name": "coding",
+  "description": "General development agent for Bash sandbox scripts",
+  "prompt": "file://./prompts/coding.md",
+  "tools": ["read", "write", "shell"],
+  "allowedTools": ["read"],
+  "toolsSettings": {
+    "write": {
+      "allowedPaths": ["*.sh", "*.sb", "Dockerfile"]
+    }
+  },
+  "resources": ["README.md", "DOCKER_SANDBOX.md"],
+  "hooks": {
+    "agentSpawn": ["git status --porcelain", "git branch --show-current"]
+  }
+}

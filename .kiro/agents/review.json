@@ -1,0 +1,16 @@
+{
+  "name": "review",
+  "description": "Code review agent for shell script security and quality",
+  "prompt": "file://./prompts/review.md",
+  "tools": ["read", "shell"],
+  "allowedTools": ["read", "shell"],
+  "toolsSettings": {
+    "shell": {
+      "allowedCommands": ["grep", "find", "wc", "head", "tail", "cat", "diff", "git diff", "git log", "shellcheck"]
+    }
+  },
+  "resources": ["README.md", "DOCKER_SANDBOX.md"],
+  "hooks": {
+    "agentSpawn": ["git diff --name-only HEAD~1"]
+  }
+}
