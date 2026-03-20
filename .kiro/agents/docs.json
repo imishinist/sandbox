@@ -9,5 +9,5 @@
       "allowedPaths": ["*.md"]
     }
   },
-  "resources": ["README.md", "DOCKER_SANDBOX.md"]
+  "resources": ["file://README.md", "file://DOCKER_SANDBOX.md"]
 }
