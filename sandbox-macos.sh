@@ -5,11 +5,15 @@ set -e
 # tmux監視機能（sandbox.shから移植）
 if command -v tmux >/dev/null 2>&1 && [[ -n "$TMUX" ]]; then
     tmux setw monitor-silence 3
-    trap 'tmux setw monitor-silence 0' EXIT
 fi
 
 # 作業ディレクトリを取得
 WORKING_DIR=$(pwd)
+
+# HOMEディレクトリからの実行チェック（Docker版と同様）
+if [[ "$WORKING_DIR" == "$HOME" ]]; then
+    echo "WARNING: Running from HOME directory ($HOME). The entire HOME directory will be writable in the sandbox." >&2
+fi
 
 # スクリプトのディレクトリを取得（シンボリックリンク対応）
 SCRIPT_PATH="${BASH_SOURCE[0]}"
@@ -59,9 +63,62 @@ for var in "${SAFE_ENV_VARS[@]}"; do
     fi
 done
 
+# 設定ファイル管理
+CONFIG_DIR="$HOME/.config/sandbox"
+CONFIG_FILE="$CONFIG_DIR/paths.conf"
+
+# デフォルト設定ファイルの生成
+if [[ ! -f "$CONFIG_FILE" ]]; then
+    mkdir -p "$CONFIG_DIR"
+    cat > "$CONFIG_FILE" << 'EOF'
+# sandbox extra writable paths
+# 1行1パス、~ は $HOME に展開されます
+
+# ビルドキャッシュ
+~/Library/Caches/ms-playwright
+~/Library/Caches/go-build
+~/.cache/uv
+
+# パッケージマネージャ
+~/go/pkg
+~/.npm
+~/.cargo
+
+# エディタ
+~/.local/share/.nvim
+~/.local/state/.nvim
+EOF
+    echo "Created default config: $CONFIG_FILE" >&2
+fi
+
+# 設定ファイルからパスを読み込み、プロファイルに注入する一時ファイルを生成
+TEMP_PROFILE=$(mktemp /tmp/sandbox-profile.XXXXXX)
+trap 'rm -f "$TEMP_PROFILE"; command -v tmux >/dev/null 2>&1 && [[ -n "$TMUX" ]] && tmux setw monitor-silence 0' EXIT
+
+extra_rules=""
+while IFS= read -r line; do
+    [[ -z "$line" || "$line" == \#* ]] && continue
+    line="${line/#\~/$HOME}"
+    extra_rules+="(allow file-write* (subpath \"${line}\"))"$'\n'
+done < "$CONFIG_FILE"
+
+# プロファイルテンプレートにルールを注入
+while IFS= read -r profile_line; do
+    if [[ "$profile_line" == ";; __EXTRA_WRITE_PATHS__" ]]; then
+        printf '%s' "$extra_rules"
+    else
+        printf '%s\n' "$profile_line"
+    fi
+done < "$PROFILE_FILE" > "$TEMP_PROFILE"
+
+# リソース制限
+# macOS では ulimit -v (virtual memory) が使えないため、利用可能な制限を設定
+ulimit -f 1048576  # ファイルサイズ: 512MB (512-byte blocks)
+ulimit -n 256      # オープンファイル数
+
 # sandbox-execを実行
 sandbox-exec \
     "${env_args[@]}" \
     -D "WORKING_DIR=$WORKING_DIR" \
-    -f "$PROFILE_FILE" \
+    -f "$TEMP_PROFILE" \
     "$@"

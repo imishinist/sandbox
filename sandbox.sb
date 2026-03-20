@@ -51,19 +51,8 @@
 (allow file-read* file-read-metadata
     (subpath "/Applications/Kiro CLI.app"))
 
-;; for tools
-(allow file-write*
-    (subpath (string-append (param "HOME") "/Library/Caches/ms-playwright"))
-    (subpath (string-append (param "HOME") "/Library/Caches/go-build"))
-    (subpath (string-append (param "HOME") "/.cache/uv"))
-    (subpath (string-append (param "HOME") "/go/pkg"))
-    (subpath (string-append (param "HOME") "/.npm"))
-    (subpath (string-append (param "HOME") "/.cargo")))
-
-;; editor
-(allow file-write*
-    (subpath (string-append (param "HOME") "/.local/share/.nvim"))
-    (subpath (string-append (param "HOME") "/.local/state/.nvim")))
+;; 設定ファイル（~/.config/sandbox/paths.conf）から注入される追加書き込みパス
+;; __EXTRA_WRITE_PATHS__
 
 ;; ========================================
 ;; デバイスアクセス制限（sandbox.shから移植）
@@ -73,12 +62,7 @@
 (deny file-read* file-write*
     (literal "/dev/kmem")
     (literal "/dev/mem")
-    (literal "/dev/disk0")
-    (literal "/dev/disk1")
-    (literal "/dev/disk2")
-    (literal "/dev/disk3")
-    (literal "/dev/disk4")
-    (literal "/dev/disk5"))
+    (regex #"^/dev/r?disk[0-9]"))
 
 ;; 安全なデバイスファイルのみ許可
 (allow file-read* file-write*

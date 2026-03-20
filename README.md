@@ -12,6 +12,27 @@
 - `sandbox-macos.sh`: macOS sandbox-execを使用したサンドボックス
 - macOS専用
 
+#### セキュリティ機能
+- ファイルシステム書き込み制限（作業ディレクトリと許可パスのみ書き込み可）
+- 機密ディレクトリ（`~/.ssh`, `~/.gnupg`）へのアクセス拒否
+- デバイスアクセス制限（`/dev/disk*`, `/dev/rdisk*`, `/dev/kmem`, `/dev/mem`）
+- 危険なコマンド（`sudo`, `su`, `chroot`）の実行拒否
+- リソース制限（ファイルサイズ 512MB、オープンファイル数 256）
+- HOMEディレクトリからの実行時に警告を表示
+
+#### 設定ファイル
+ツール固有の書き込み許可パスは `~/.config/sandbox/paths.conf` で管理されます。
+初回実行時にデフォルト設定が自動生成されます。
+
+```
+# ~/.config/sandbox/paths.conf
+# 1行1パス、~ は $HOME に展開されます
+
+~/Library/Caches/go-build
+~/.npm
+~/.cargo
+```
+
 ### 3. systemd-run版（Linux）
 - `sandbox-systemd.sh`: systemd-runを使用したサンドボックス
 - Linux（systemd必須）で動作
