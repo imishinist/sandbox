@@ -55,6 +55,26 @@
 ;; __EXTRA_WRITE_PATHS__
 
 ;; ========================================
+;; ネットワーク制限
+;; ========================================
+
+;; デフォルトでネットワークを遮断
+(deny network*)
+
+;; ローカルホストは常に許可
+(allow network-bind (local ip "localhost:*"))
+(allow network-inbound (local ip "localhost:*"))
+(allow network-outbound (remote ip "localhost:*"))
+
+;; DNS は常に許可（mDNSResponder + ポート53）
+(allow network-outbound (literal "/private/var/run/mDNSResponder"))
+(allow network-outbound (remote udp "*:53"))
+(allow network-outbound (remote tcp "*:53"))
+
+;; --network フラグで注入される全ネットワーク許可ルール
+;; __NETWORK_ALLOW__
+
+;; ========================================
 ;; デバイスアクセス制限（sandbox.shから移植）
 ;; ========================================
 

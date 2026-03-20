@@ -7,6 +7,15 @@ if command -v tmux >/dev/null 2>&1 && [[ -n "$TMUX" ]]; then
     tmux setw monitor-silence 3
 fi
 
+# フラグパース
+ALLOW_NETWORK=0
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --network) ALLOW_NETWORK=1; shift ;;
+        *) break ;;
+    esac
+done
+
 # 作業ディレクトリを取得
 WORKING_DIR=$(pwd)
 
@@ -102,10 +111,18 @@ while IFS= read -r line; do
     extra_rules+="(allow file-write* (subpath \"${line}\"))"$'\n'
 done < "$CONFIG_FILE"
 
+# ネットワーク許可ルール
+network_rule=""
+if [[ "$ALLOW_NETWORK" -eq 1 ]]; then
+    network_rule="(allow network*)"
+fi
+
 # プロファイルテンプレートにルールを注入
 while IFS= read -r profile_line; do
     if [[ "$profile_line" == ";; __EXTRA_WRITE_PATHS__" ]]; then
         printf '%s' "$extra_rules"
+    elif [[ "$profile_line" == ";; __NETWORK_ALLOW__" ]]; then
+        [[ -n "$network_rule" ]] && printf '%s\n' "$network_rule"
     else
         printf '%s\n' "$profile_line"
     fi
