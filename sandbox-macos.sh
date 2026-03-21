@@ -11,7 +11,7 @@ fi
 ALLOW_NETWORK=0
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --network) ALLOW_NETWORK=1; shift ;;
+        -n|--network) ALLOW_NETWORK=1; shift ;;
         *) break ;;
     esac
 done
