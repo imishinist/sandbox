@@ -143,7 +143,7 @@ done < "$PROFILE_FILE" > "$TEMP_PROFILE"
 # リソース制限
 # macOS では ulimit -v (virtual memory) が使えないため、利用可能な制限を設定
 ulimit -f 1048576  # ファイルサイズ: 512MB (512-byte blocks)
-ulimit -n 256      # オープンファイル数
+ulimit -n 1024      # オープンファイル数
 
 # sandbox-execを実行
 sandbox-exec \
